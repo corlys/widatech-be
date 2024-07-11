@@ -1,5 +1,5 @@
 import express from "express";
-import { createInvoice } from "../db";
+import { createInvoice, getInvoicesWithPg } from "../db";
 import { z } from "zod";
 import "dotenv/config";
 
@@ -12,6 +12,16 @@ const invoiceInputSchema = z.object({
 });
 
 const router = express.Router();
+
+router.get("/invoice", async (req, res) => {
+  try {
+    const result = await getInvoicesWithPg(3, 3);
+    return res.json({ result })
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({message: "Internal server error"});
+  }
+})
 
 router.post("/invoice", async (req, res) => {
   try {

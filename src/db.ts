@@ -1,4 +1,12 @@
-import { pgTable, serial, text, timestamp, varchar, integer, numeric } from "drizzle-orm/pg-core";
+import { desc } from "drizzle-orm";
+import {
+  pgTable,
+  serial,
+  text,
+  timestamp,
+  varchar,
+  numeric,
+} from "drizzle-orm/pg-core";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 
@@ -26,6 +34,16 @@ const queryClient = postgres({
 
 const db = drizzle(queryClient);
 
-export const createInvoice=(newInvoice: NewInvoice) => {
+export const createInvoice = (newInvoice: NewInvoice) => {
   return db.insert(invoices).values(newInvoice).returning();
+};
+
+export const getInvoicesWithPg = async (page = 1, limit = 5) => {
+  const ITEM_PERPAGE = 3;
+  return await db
+    .select()
+    .from(invoices)
+    .offset((page - 1) * ITEM_PERPAGE)
+    .limit(limit)
+    .orderBy(desc(invoices.createdAt));
 };
