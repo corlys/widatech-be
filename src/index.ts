@@ -1,16 +1,10 @@
-import type { Request, Response } from "express";
 import express from "express";
+import router from "./router";
 
-// Boot express
 const app = express();
 const port = process.env.PORT;
 
 app.use(express.json());
+app.use("/", router);
 
-// Application routing
-app.use("/", (req: Request, res: Response) => {
-  res.status(200).send({ data: "Hello from Ornio AS" });
-});
-
-// Start server
 app.listen(port, () => console.log(`Server is listening on port ${port}!`));
