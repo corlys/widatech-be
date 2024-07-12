@@ -1,4 +1,4 @@
-import { desc } from "drizzle-orm";
+import { asc, desc, sql } from "drizzle-orm";
 import {
   pgTable,
   serial,
@@ -47,3 +47,42 @@ export const getInvoicesWithPg = async (page = 1, limit = 5) => {
     .limit(limit)
     .orderBy(desc(invoices.createdAt));
 };
+
+export async function getDailyRevenue() {
+  return db
+    .select({
+      date: sql<Date>`DATE_TRUNC('day', ${invoices.createdAt})`.as("date"),
+      dailyRevenue: sql<number>`SUM(${invoices.totalAmount})`.as(
+        "dailyRevenue"
+      ),
+    })
+    .from(invoices)
+    .groupBy(sql`DATE_TRUNC('day', ${invoices.createdAt})`)
+    .orderBy(sql`DATE_TRUNC('day', ${invoices.createdAt})`);
+}
+
+export async function getWeeklyRevenue() {
+  return db
+    .select({
+      week: sql<Date>`DATE_TRUNC('week', ${invoices.createdAt})`.as("date"),
+      weeklyRevenue: sql<number>`SUM(${invoices.totalAmount})`.as(
+        "dailyRevenue"
+      ),
+    })
+    .from(invoices)
+    .groupBy(sql`DATE_TRUNC('week', ${invoices.createdAt})`)
+    .orderBy(sql`DATE_TRUNC('week', ${invoices.createdAt})`);
+}
+
+export async function getMonthlyRevenue() {
+  return db
+    .select({
+      month: sql<Date>`DATE_TRUNC('month', ${invoices.createdAt})`.as("date"),
+      monthlyRevenue: sql<number>`SUM(${invoices.totalAmount})`.as(
+        "dailyRevenue"
+      ),
+    })
+    .from(invoices)
+    .groupBy(sql`DATE_TRUNC('month', ${invoices.createdAt})`)
+    .orderBy(sql`DATE_TRUNC('month', ${invoices.createdAt})`);
+}

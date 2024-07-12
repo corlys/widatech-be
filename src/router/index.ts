@@ -1,7 +1,13 @@
 import express from "express";
-import { createInvoice, getInvoicesWithPg } from "../db";
+import {
+  createInvoice,
+  getDailyRevenue,
+  getMonthlyRevenue,
+  getWeeklyRevenue,
+  getInvoicesWithPg,
+} from "../db";
 import { invoiceBodyRequest } from "../schema/bodies";
-import { invoiceQueryRequest } from "../schema/queries";
+import { invoiceQueryRequest, revenueQueryRequest } from "../schema/queries";
 import { StatusCodes } from "http-status-codes";
 
 import "dotenv/config";
@@ -16,13 +22,14 @@ router.get("/invoice", async (req, res) => {
         .status(StatusCodes.BAD_REQUEST)
         .json({ message: parsedQuery.error.toString() });
     }
+    const LIMIT = 3;
     const result = await getInvoicesWithPg(
       parseInt(parsedQuery.data?.page ?? "1"),
-      3
+      LIMIT
     );
     const hasNextPage = await getInvoicesWithPg(
       parseInt(parsedQuery.data?.page ?? "1") + 1,
-      3
+      LIMIT
     );
     return res
       .status(StatusCodes.OK)
@@ -52,6 +59,39 @@ router.post("/invoice", async (req, res) => {
     res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ message: "Internal server error" });
+  }
+});
+
+router.get("/revenue", async (req, res) => {
+  try {
+    const parsedQuery = revenueQueryRequest.safeParse(req.query);
+    if (!parsedQuery)
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: "Bad Request" });
+    switch (parsedQuery.data?.type) {
+      case "daily":
+        const daily = await getDailyRevenue();
+        return res.status(StatusCodes.OK).json({
+          revenue: daily,
+        });
+      case "weekly":
+        const weekly = await getWeeklyRevenue();
+        return res.status(StatusCodes.OK).json({
+          revenue: weekly,
+        });
+      case "monthly":
+        const monthly = await getMonthlyRevenue();
+        return res.status(StatusCodes.OK).json({
+          revenue: monthly,
+        });
+      default:
+        return res.status(StatusCodes.NOT_FOUND).json({ message: "Not Found" });
+    }
+  } catch (error) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ message: "Internal Server Error" });
   }
 });
 
