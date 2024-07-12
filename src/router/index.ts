@@ -12,10 +12,21 @@ router.get("/invoice", async (req, res) => {
   try {
     const parsedQuery = invoiceQueryRequest.safeParse(req.query);
     if (!parsedQuery.success) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: parsedQuery.error.toString() });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: parsedQuery.error.toString() });
     }
-    const result = await getInvoicesWithPg(parseInt(parsedQuery.data?.page ?? "0"), 3);
-    return res.status(StatusCodes.OK).json({ result });
+    const result = await getInvoicesWithPg(
+      parseInt(parsedQuery.data?.page ?? "1"),
+      3
+    );
+    const hasNextPage = await getInvoicesWithPg(
+      parseInt(parsedQuery.data?.page ?? "1") + 1,
+      3
+    );
+    return res
+      .status(StatusCodes.OK)
+      .json({ invoices: result, hasNextPage: hasNextPage.length > 0 });
   } catch (error) {
     console.log(error);
     return res
@@ -28,7 +39,9 @@ router.post("/invoice", async (req, res) => {
   try {
     const parsedBody = invoiceBodyRequest.safeParse(req.body);
     if (!parsedBody.success) {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: parsedBody.error.toString() });
+      return res
+        .status(StatusCodes.BAD_REQUEST)
+        .json({ message: parsedBody.error.toString() });
     }
     await createInvoice(parsedBody.data);
     res
