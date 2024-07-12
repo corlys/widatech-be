@@ -73,17 +73,17 @@ router.get("/revenue", async (req, res) => {
       case "daily":
         const daily = await getDailyRevenue();
         return res.status(StatusCodes.OK).json({
-          revenue: daily,
+          revenues: daily,
         });
       case "weekly":
         const weekly = await getWeeklyRevenue();
         return res.status(StatusCodes.OK).json({
-          revenue: weekly,
+          revenues: weekly,
         });
       case "monthly":
         const monthly = await getMonthlyRevenue();
         return res.status(StatusCodes.OK).json({
-          revenue: monthly,
+          revenues: monthly,
         });
       default:
         return res.status(StatusCodes.NOT_FOUND).json({ message: "Not Found" });
