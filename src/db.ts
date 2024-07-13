@@ -52,9 +52,7 @@ export async function getDailyRevenue() {
   return db
     .select({
       date: sql<Date>`DATE_TRUNC('day', ${invoices.createdAt})`.as("date"),
-      dailyRevenue: sql<number>`SUM(${invoices.totalAmount})`.as(
-        "revenue"
-      ),
+      revenue: sql<number>`SUM(${invoices.totalAmount})`.as("revenue"),
     })
     .from(invoices)
     .groupBy(sql`DATE_TRUNC('day', ${invoices.createdAt})`)
@@ -65,9 +63,7 @@ export async function getWeeklyRevenue() {
   return db
     .select({
       date: sql<Date>`DATE_TRUNC('week', ${invoices.createdAt})`.as("date"),
-      revenue: sql<number>`SUM(${invoices.totalAmount})`.as(
-        "revenue"
-      ),
+      revenue: sql<number>`SUM(${invoices.totalAmount})`.as("revenue"),
     })
     .from(invoices)
     .groupBy(sql`DATE_TRUNC('week', ${invoices.createdAt})`)
@@ -78,10 +74,8 @@ export async function getMonthlyRevenue() {
   return db
     .select({
       date: sql<Date>`DATE_TRUNC('month', ${invoices.createdAt})`.as("date"),
-      revenue: sql<number>`SUM(${invoices.totalAmount})`.as(
-        "revenue"
-      ),
-    })
+      revenue: sql<number>`SUM(${invoices.totalAmount})`.as("revenue"),
+    })  
     .from(invoices)
     .groupBy(sql`DATE_TRUNC('month', ${invoices.createdAt})`)
     .orderBy(sql`DATE_TRUNC('month', ${invoices.createdAt})`);
