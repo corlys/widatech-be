@@ -85,7 +85,7 @@ CREATE TABLE invoices (
 );
 ```
 
-If you want to generate dummy files, then run this command
+If you want to generate dummy rows, then run this command
 
 ```sql
 INSERT INTO invoices (sales_person_name, customer_name, notes, products_sold, total_amount, created_at, updated_at)
