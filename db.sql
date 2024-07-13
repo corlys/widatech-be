@@ -5,6 +5,7 @@ CREATE TABLE invoices (
     customer_name VARCHAR(255) NOT NULL,
     notes TEXT,
     products_sold TEXT NOT NULL,
+    total_amount NUMERIC NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+--);
